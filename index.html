@@ -18,7 +18,7 @@
   data-color="#1e3a8a"
   data-bot-name="Sofia"
   data-popup-message="Ask a question or book an appointment"
-  data-show-ai-popup="true"
+  data-show-ai-popup="false"
   data-show-ai-popup-time="3"
   data-auto-open="false"
 ></script>
@@ -28,5 +28,129 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
+  <!-- Custom Sofia floating button -->
+<style>
+  #sofia-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #1e3a8a;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 16px rgba(30,58,138,0.4);
+    cursor: pointer;
+    z-index: 99999;
+    overflow: hidden;
+    padding: 0;
+    transition: transform 0.2s;
+  }
+  #sofia-btn:hover { transform: scale(1.07); }
+  #sofia-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  #sofia-popup {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    background: #1a1f2e;
+    color: #fff;
+    border-radius: 14px 14px 4px 14px;
+    padding: 12px 16px;
+    z-index: 99998;
+    min-width: 200px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: popIn 0.3s ease;
+  }
+  #sofia-popup .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    flex-shrink: 0;
+  }
+  #sofia-popup .pop-text .title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.3;
+  }
+  #sofia-popup .pop-text .sub {
+    font-size: 12px;
+    color: #60d9a0;
+    margin-top: 2px;
+  }
+  #sofia-popup .close-pop {
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    line-height: 1;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  @keyframes popIn {
+    from { opacity:0; transform: translateY(8px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+  #sofia-popup.hidden { display: none; }
+</style>
+
+<!-- Popup bubble -->
+<div id="sofia-popup">
+  <button class="close-pop" onclick="dismissPopup()">✕</button>
+  <div class="dot"></div>
+  <div class="pop-text">
+    <div class="title">Ask or book a call</div>
+    <div class="sub">Sofia is ready to help</div>
+  </div>
+</div>
+
+<!-- Sofia avatar button -->
+<button id="sofia-btn" onclick="openRetell()" aria-label="Chat with Sofia">
+  <img src="https://i.pravatar.cc/150?img=47" alt="Sofia" />
+</button>
+
+<script>
+  // Show popup after 3 seconds
+  setTimeout(() => {
+    const p = document.getElementById('sofia-popup');
+    if (p && !sessionStorage.getItem('sofiaDismissed')) {
+      p.classList.remove('hidden');
+    }
+  }, 3000);
+
+  function dismissPopup() {
+    document.getElementById('sofia-popup').classList.add('hidden');
+    sessionStorage.setItem('sofiaDismissed', '1');
+  }
+
+  function openRetell() {
+    dismissPopup();
+    // Click the hidden Retell button to open the chat
+    const retellBtn = document.querySelector(
+      '[data-retell-widget-button], .retell-widget-button, ' +
+      'button[class*="retell"], div[class*="retell-widget"]'
+    );
+    if (retellBtn) {
+      retellBtn.click();
+    } else {
+      // fallback: try after short delay (widget still loading)
+      setTimeout(() => {
+        document.querySelector(
+          '[data-retell-widget-button], button[class*="retell"]'
+        )?.click();
+      }, 500);
+    }
+  }
+</script>
 </body>
 </html>
