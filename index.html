@@ -1,8 +1,10 @@
-    <!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Retell Chat Widget Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Google AI Studio App</title>
+   <title>Retell Chat Widget Example</title>
     <script src="https://www.google.com/recaptcha/api.js?render=YOUR_GOOGLE_RECAPTCHA_SITE_KEY"></script>
     <script
       id="retell-widget"
@@ -13,8 +15,11 @@
       data-title="Chat with us!"
       data-recaptcha-key="YOUR_GOOGLE_RECAPTCHA_SITE_KEY"
     ></script>
+
   </head>
-  <body></body>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
-
-
