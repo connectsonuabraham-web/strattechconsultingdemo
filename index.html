@@ -3,22 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Strattech Consulting</title>
-  
-<script type="module">
-  import "https://dashboard.retellai.com/retell-widget.js";
-</script>
+  <!-- Add this inside <head> on any HTML page -->
 
-<script>
-  window.addEventListener("load", () => {
-    const script = document.createElement("script");
-    script.src = "https://dashboard.retellai.com/retell-widget.js";
-    script.setAttribute("data-public-key", "public_key_e9ce7af033bd2a9cd3f91");
-    script.setAttribute("data-agent-id", "agent_aa68003fa93eb734fcb6e26022");
-    script.setAttribute("data-title", "Chat with Strattech");
-    document.head.appendChild(script);
-  });
-</script>
+<!-- Sofia avatar: hosted female assistant image -->
+<script
+  id="retell-widget"
+  src="https://dashboard.retellai.com/retell-widget.js"
+  type="module"
+  data-public-key="public_key_e9ce7af033bd2a9cd3f91"
+  data-agent-id="agent_aa68003fa93eb734fcb6e26022"
+  data-agent-version="0"
+  data-title="Chat with Strattech"
+  data-logo-url="https://i.pravatar.cc/150?img=47"
+  data-color="#1e3a8a"
+  data-bot-name="Sofia"
+  data-popup-message="Ask a question or book an appointment"
+  data-show-ai-popup="true"
+  data-show-ai-popup-time="3"
+  data-auto-open="false"
+></script>
 
 </head>
 
