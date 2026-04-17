@@ -4,22 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Google AI Studio App</title>
-    <!-- RETELL CHAT WIDGET -->
-<script
-  id="retell-widget"
-  src="https://dashboard.retellai.com/retell-widget.js"
-  type="module"
-  data-public-key="public_key_e9ce7af033bd2a9cd3f91"
-  data-agent-id="agent_aa68003fa93eb734fcb6e26022"
-  data-title="Chat with Strattech"
-  data-color="#2563eb"
-  data-bot-name="Strattech AI"
-  data-popup-message="Need help? Chat with us."
-  data-show-ai-popup="true"
-  data-show-ai-popup-time="3"
-  data-auto-open="false"
->
-</script>
+    <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Retell Chat Widget Example</title>
+    <script src="https://www.google.com/recaptcha/api.js?render=YOUR_GOOGLE_RECAPTCHA_SITE_KEY"></script>
+    <script
+      id="retell-widget"
+      src="https://dashboard.retellai.com/retell-widget.js"
+      data-public-key="public_key_e9ce7af033bd2a9cd3f91"
+      data-agent-id="agent_aa68003fa93eb734fcb6e26022"
+      data-agent-version="0"
+      data-title="Chat with us!"
+      data-recaptcha-key="YOUR_GOOGLE_RECAPTCHA_SITE_KEY"
+    ></script>
+  </head>
+  <body></body>
+</html>
   </head>
   <body>
     <div id="root"></div>
