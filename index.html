@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Strattech Consulting</title>
  
-  <!-- ============================================================
-       RETELL WIDGET SCRIPT
-       - data-show-ai-popup="false"  → disables Retell's own popup
-       - data-auto-open="false"      → we control open/close
-       ============================================================ -->
+  <!-- RETELL WIDGET — popup and auto-open both off, we handle everything -->
   <script
     id="retell-widget"
     src="https://dashboard.retellai.com/retell-widget.js"
@@ -26,28 +22,23 @@
     data-auto-open="false"
   ></script>
  
-  <!-- ============================================================
-       HIDE RETELL'S DEFAULT ROBOT BUTTON COMPLETELY
-       We use !important and target every selector Retell may use
-       so their button is invisible and can't interfere.
-       ============================================================ -->
   <style>
-    /* Hide Retell's native floating button — all known selectors */
+    /* Hide Retell's robot button visually but NOT with display:none or
+       pointer-events:none — we need to programmatically .click() it.
+       visibility:hidden keeps it in the DOM and clickable via JS.       */
     #retell-widget-button,
     .retell-widget-button,
     [data-retell-widget-button],
     div[class*="retell-widget-launcher"],
     div[class*="retellWidgetLauncher"],
     button[class*="retell-widget"],
-    iframe[id*="retell-widget"],
     div[id*="retell-widget-container"] > button {
-      display: none !important;
       visibility: hidden !important;
       opacity: 0 !important;
       pointer-events: none !important;
     }
  
-    /* ── Custom Sofia Floating Button ── */
+    /* Sofia floating button */
     #sofia-btn {
       position: fixed;
       bottom: 24px;
@@ -57,16 +48,14 @@
       border-radius: 50%;
       background: #1e3a8a;
       border: 3px solid #ffffff;
-      box-shadow: 0 4px 20px rgba(30, 58, 138, 0.45);
+      box-shadow: 0 4px 20px rgba(30,58,138,0.45);
       cursor: pointer;
-      z-index: 2147483647; /* maximum z-index */
+      z-index: 2147483647;
       overflow: hidden;
       padding: 0;
       transition: transform 0.2s ease;
     }
-    #sofia-btn:hover {
-      transform: scale(1.08);
-    }
+    #sofia-btn:hover { transform: scale(1.08); }
     #sofia-btn img {
       width: 100%;
       height: 100%;
@@ -75,7 +64,7 @@
       display: block;
     }
  
-    /* ── Custom Popup Bubble ── */
+    /* Popup bubble */
     #sofia-popup {
       position: fixed;
       bottom: 98px;
@@ -86,18 +75,15 @@
       padding: 13px 36px 13px 14px;
       z-index: 2147483646;
       min-width: 210px;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.35);
       display: flex;
       align-items: center;
       gap: 10px;
-      animation: sofiaPopIn 0.3s ease both;
+      animation: sofiaPopIn 0.4s ease both;
     }
-    #sofia-popup.hidden {
-      display: none;
-    }
+    #sofia-popup.hidden { display: none !important; }
     #sofia-popup .dot {
-      width: 9px;
-      height: 9px;
+      width: 9px; height: 9px;
       border-radius: 50%;
       background: #22c55e;
       flex-shrink: 0;
@@ -105,7 +91,7 @@
     #sofia-popup .pop-text .title {
       font-size: 14px;
       font-weight: 600;
-      color: #ffffff;
+      color: #fff;
       line-height: 1.3;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
@@ -117,35 +103,29 @@
     }
     #sofia-popup .close-pop {
       position: absolute;
-      top: 7px;
-      right: 9px;
+      top: 7px; right: 9px;
       font-size: 13px;
-      color: rgba(255, 255, 255, 0.5);
+      color: rgba(255,255,255,0.55);
       cursor: pointer;
       background: none;
       border: none;
-      padding: 0;
+      padding: 2px 4px;
       line-height: 1;
     }
-    #sofia-popup .close-pop:hover {
-      color: rgba(255, 255, 255, 0.9);
-    }
+    #sofia-popup .close-pop:hover { color: #fff; }
     @keyframes sofiaPopIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from { opacity:0; transform: translateY(10px); }
+      to   { opacity:1; transform: translateY(0); }
     }
   </style>
 </head>
  
 <body>
-  <!-- Your site content renders here (React, HTML, etc.) -->
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
  
-  <!-- ============================================================
-       CUSTOM POPUP BUBBLE
-       ============================================================ -->
-  <div id="sofia-popup" class="hidden">
+  <!-- Popup — visible immediately, hidden only after user clicks X -->
+  <div id="sofia-popup">
     <button class="close-pop" onclick="sofiaClose()" aria-label="Close">✕</button>
     <div class="dot"></div>
     <div class="pop-text">
@@ -154,72 +134,84 @@
     </div>
   </div>
  
-  <!-- ============================================================
-       SOFIA AVATAR BUTTON
-       Image: same URL used in data-logo-url above
-       ============================================================ -->
+  <!-- Sofia avatar button -->
   <button id="sofia-btn" onclick="sofiaOpen()" aria-label="Chat with Sofia">
-    <img src="https://i.pravatar.cc/150?img=47" alt="Sofia - Strattech Assistant" />
+    <img src="https://i.pravatar.cc/150?img=47" alt="Sofia" />
   </button>
  
-  <!-- ============================================================
-       LOGIC
-       ============================================================ -->
   <script>
-    /* Show popup after 3 s (skip if already dismissed this session) */
-    setTimeout(function () {
-      if (!sessionStorage.getItem('sofiaDismissed')) {
-        var p = document.getElementById('sofia-popup');
-        if (p) p.classList.remove('hidden');
-      }
-    }, 3000);
+    /* If user already closed popup this session, keep it hidden */
+    if (sessionStorage.getItem('sofiaDismissed')) {
+      document.getElementById('sofia-popup').classList.add('hidden');
+    }
  
     function sofiaClose() {
-      var p = document.getElementById('sofia-popup');
-      if (p) p.classList.add('hidden');
+      document.getElementById('sofia-popup').classList.add('hidden');
       sessionStorage.setItem('sofiaDismissed', '1');
     }
  
     function sofiaOpen() {
       sofiaClose();
  
-      /*
-        Find and click Retell's hidden button.
-        Retell renders their button inside a shadow DOM or a fixed div.
-        We try multiple selectors + a MutationObserver fallback.
-      */
-      var found = tryClickRetell();
-      if (!found) {
-        /* Widget JS may still be mounting — retry up to 10× over 2 s */
-        var tries = 0;
-        var interval = setInterval(function () {
-          tries++;
-          if (tryClickRetell() || tries >= 10) clearInterval(interval);
+      /* Retell injects a button into the page. We find it, briefly
+         restore visibility so the browser fires the click correctly,
+         then hide it again. Retry every 200ms if widget still loading. */
+      if (!triggerRetell()) {
+        var attempts = 0;
+        var poll = setInterval(function () {
+          attempts++;
+          if (triggerRetell() || attempts > 15) clearInterval(poll);
         }, 200);
       }
     }
  
-    function tryClickRetell() {
+    function triggerRetell() {
       var selectors = [
         '#retell-widget-button',
         '.retell-widget-button',
         '[data-retell-widget-button]',
         'button[class*="retell"]',
         'div[class*="retell"] button',
-        'div[id*="retell"] button'
+        'div[id*="retell"] button',
+        'button[aria-label*="chat" i]',
+        'button[aria-label*="retell" i]'
       ];
+ 
       for (var i = 0; i < selectors.length; i++) {
         var el = document.querySelector(selectors[i]);
         if (el) {
-          /* Temporarily make it clickable even though we hid it visually */
-          el.style.pointerEvents = 'auto';
-          el.click();
-          el.style.pointerEvents = 'none';
+          /* Temporarily restore visibility + pointer-events */
+          el.style.setProperty('visibility', 'visible', 'important');
+          el.style.setProperty('opacity', '1', 'important');
+          el.style.setProperty('pointer-events', 'auto', 'important');
+ 
+          el.dispatchEvent(new MouseEvent('click', {
+            bubbles: true, cancelable: true, view: window
+          }));
+ 
+          /* Re-hide after a tick */
+          setTimeout(function (elem) {
+            elem.style.setProperty('visibility', 'hidden', 'important');
+            elem.style.setProperty('opacity', '0', 'important');
+            elem.style.setProperty('pointer-events', 'none', 'important');
+          }, 80, el);
+ 
           return true;
         }
       }
+ 
+      /* Check shadow DOM (some Retell versions use it) */
+      var divs = document.querySelectorAll('div');
+      for (var j = 0; j < divs.length; j++) {
+        if (divs[j].shadowRoot) {
+          var inner = divs[j].shadowRoot.querySelector('button');
+          if (inner) { inner.click(); return true; }
+        }
+      }
+ 
       return false;
     }
   </script>
 </body>
 </html>
+ 
